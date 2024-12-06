@@ -11,6 +11,9 @@ pub struct ErrorResponse {
 pub enum Error {
   #[error("SurrealDB error: {0}")]
   SurrealDBError(String),
+
+  #[error("Configuration error: {0}")]
+  ConfigurationError(String),
 }
 
 impl From<surrealdb::Error> for Error {
@@ -18,8 +21,13 @@ impl From<surrealdb::Error> for Error {
     match err {
       surrealdb::Error::Db(db_err) => Error::SurrealDBError(db_err.to_string()),
       surrealdb::Error::Api(api_err) => Error::SurrealDBError(api_err.to_string()),
-      _ => Error::SurrealDBError(err.to_string()),
     }
+  }
+}
+
+impl From<std::env::VarError> for Error {
+  fn from(err: std::env::VarError) -> Self {
+    Error::ConfigurationError(err.to_string())
   }
 }
 
@@ -39,6 +47,7 @@ impl actix_web::error::ResponseError for Error {
     
     match *self {
       Error::SurrealDBError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+      Error::ConfigurationError(_) => StatusCode::INTERNAL_SERVER_ERROR,
     }
   }
 }

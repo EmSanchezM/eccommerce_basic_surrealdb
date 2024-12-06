@@ -1,6 +1,5 @@
 use std::sync::Arc;
 use surrealdb::engine::remote::ws::{Client, Ws};
-use surrealdb::opt::auth::Root;
 use surrealdb::Surreal;
 
 use crate::handle_error::error::Error;
