@@ -1,30 +1,27 @@
 use std::sync::Arc;
-use surrealdb::engine::any;
+use surrealdb::engine::remote::ws::{Client, Ws};
 use surrealdb::opt::auth::Root;
 use surrealdb::Surreal;
 
 use crate::handle_error::error::Error;
 
 pub struct DatabaseConnection {
-  db: Arc<Surreal<any::Any>>,
+  db: Arc<Surreal<Client>>,
 }
 
 impl DatabaseConnection {
-  pub async fn new(url: &str, username: &str, password: &str, database_name: &str) -> Result<Self, Error> {
+  pub async fn new(url: &str, database_name: &str, database_namespace: &str) -> Result<Self, Error> {
     
-    let db = any::connect(url).await?;
+    let db: Surreal<Client> = Surreal::init();
 
-    db.use_ns("dev").use_db(database_name).await?;
+    let _  = db.connect::<Ws>(url).await?;
 
-    db.signin(Root {
-      username,
-      password,
-    }).await?;
+    db.use_ns(database_namespace).use_db(database_name).await?;
 
     Ok(Self { db: Arc::new(db) })
   }
 
-  pub fn get_client(&self) -> Arc<Surreal<any::Any>> {
+  pub fn get_client(&self) -> Arc<Surreal<Client>> {
     self.db.clone()
   }
 }
