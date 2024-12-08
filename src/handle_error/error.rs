@@ -13,7 +13,7 @@ pub enum Error {
   SurrealDBError(String),
 
   #[error("Configuration error: {0}")]
-  ConfigurationError(String),
+  ConfigurationError(String)
 }
 
 impl From<surrealdb::Error> for Error {

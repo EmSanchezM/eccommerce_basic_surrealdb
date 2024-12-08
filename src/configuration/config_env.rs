@@ -5,6 +5,8 @@ pub struct DatabaseConfig {
   pub url: String,
   pub database_namespace: String,
   pub database_name: String,
+  pub username: String,
+  pub password: String,
 }
 
 #[derive(Debug, Clone)]
@@ -24,8 +26,10 @@ impl Config {
     Ok(Self {
       database: DatabaseConfig {
         url: std::env::var("DATABASE_URL").map_err(|_| Error::ConfigurationError("DATABASE_URL not set".to_string()))?,
-        database_namespace: std::env::var("DATABASE_NAMESPACE").map_err(|_| Error::ConfigurationError("SURREAL_DB_NAMESPACE must be set".to_string()))?,
-        database_name: std::env::var("DATABASE_NAME").map_err(|_| Error::ConfigurationError("SURREAL_DB_DATABASE must be set".to_string()))?,
+        database_namespace: std::env::var("DATABASE_NAMESPACE").map_err(|_| Error::ConfigurationError("DATABASE_NAMESPACE must be set".to_string()))?,
+        database_name: std::env::var("DATABASE_NAME").map_err(|_| Error::ConfigurationError("DATABASE_NAME must be set".to_string()))?,
+        username: std::env::var("DATABASE_USERNAME").map_err(|_| Error::ConfigurationError("DATABASE_USERNAME must be set".to_string()))?,
+        password: std::env::var("DATABASE_PASSWORD").map_err(|_| Error::ConfigurationError("DATABASE_PASSWORD must be set".to_string()))?,
       },
       server: ServerConfig {
         host: std::env::var("SERVER_HOST").map_err(|_| Error::ConfigurationError("SERVER_HOST must be set".to_string()))?,
